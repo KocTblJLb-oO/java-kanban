@@ -1,6 +1,7 @@
 package ru.moysayt.steptraker.service;
 
 import ru.moysayt.steptraker.model.Epic;
+import ru.moysayt.steptraker.model.StatusOfTask;
 import ru.moysayt.steptraker.model.Subtask;
 import ru.moysayt.steptraker.model.Task;
 
@@ -33,12 +34,17 @@ public class TaskManager {
         taskList.put(id, task);
     }
 
-    // Показать все задачи
+/*    // Показать все задачи
     public void showAllTask() {
         // Пользовательский вывод убрал, а вот про перенос в Main похоже на ошибку - он же не будет работать.
         for (Task task : taskList.values()) {
             System.out.println(task);
         }
+    }*/
+
+    // Получение всех задач
+    public ArrayList<Task> getTasks() {
+        return new ArrayList<Task>(taskList.values());
     }
 
     // Удаление всех задач
@@ -52,9 +58,8 @@ public class TaskManager {
     }
 
     // Обновление задачи
-    public void updateTask(int taskId, Task task) {
-        task.setId(taskId);
-        taskList.put(taskId, task);
+    public void updateTask(Task task) {
+        taskList.put(task.getId(), task);
     }
 
     // Удаление задачи
@@ -73,16 +78,23 @@ public class TaskManager {
         epicList.put(id, epic);
     }
 
-    // Показать все задачи
-    public void showAllEpic() {
-        for (Epic epic : epicList.values()) {
-            System.out.println(epic);
-        }
+    /*    // Показать все задачи
+        public void showAllEpic() {
+            for (Epic epic : epicList.values()) {
+                System.out.println(epic);
+            }
+        }*/
+
+    // Получение всех эпиков
+    public ArrayList<Epic> getEpics() {
+        return new ArrayList<Epic>(epicList.values());
     }
+
 
     // Удаление всех эпиков
     public void clearEpicList() {
         epicList.clear();
+        subtaskList.clear(); // Удаляем все подзадачи
     }
 
     // Получение эпика по ID
@@ -91,27 +103,51 @@ public class TaskManager {
     }
 
     // Обновление эпика
-    public void updateEpic(int epicId, Epic epic) {
-        epic.setId(epicId);
-        epicList.put(epicId, epic);
+    public void updateEpic(Epic epic) {
+        epicList.put(epic.getId(), epic);
     }
 
     // Удаление эпика
     public void deleteEpic(int id) {
-        // Удаление подзадач этого эпика
-        for (Epic epic : epicList.values()) {
-            epic.deleteAllSubtask();
-        }
+        epicList.get(id).deleteAllSubtask();
         epicList.remove(id);
     }
 
-    public ArrayList<Subtask> getEpicSubtask(int epicId){
+    // Получение подзадач эпика
+    public ArrayList<Subtask> getEpicSubtask(int epicId) {
         ArrayList<Subtask> subtasks = new ArrayList<>();
         ArrayList<Integer> subtasksId = epicList.get(epicId).getEpicSubtask();
         for (int subtaskId : subtasksId) {
             subtasks.add(subtaskList.get(subtaskId));
         }
         return subtasks;
+    }
+
+    // Обновление статуса эпика
+    public void setStatusEpic(Epic epic) {
+        StatusOfTask status;
+        int all = 0;
+        int newSub = 0;
+        int doneSub = 0;
+
+        for (int subtaskID : epic.getEpicSubtask()) {
+            status = subtaskList.get(subtaskID).getStatus();
+            all++;
+
+            if (status == StatusOfTask.NEW || all == 0) {
+                newSub++;
+            } else if (status == StatusOfTask.DONE) {
+                doneSub++;
+            }
+
+            if (all == newSub) {
+                epic.setStatus(StatusOfTask.NEW);
+            } else if (all == doneSub) {
+                epic.setStatus(StatusOfTask.DONE);
+            } else {
+                epic.setStatus(StatusOfTask.IN_PROGRESS);
+            }
+        }
     }
 
     /*
@@ -124,23 +160,29 @@ public class TaskManager {
         subtask.setId(id);
         subtaskList.put(id, subtask);
         epicList.get(epicId).addSubtask(id); // Добавляем id подзадачи в эпик
+        setStatusEpic(epicList.get(epicId)); // И обновляем статус
     }
 
-    // Показать все подзадачи
+    /*// Показать все подзадачи
     public void showAllSubtask() {
 
         for (Subtask subtask : subtaskList.values()) {
             System.out.println(subtask);
         }
+    }*/
+
+    // Получение всех подзадач
+    public ArrayList<Subtask> getSubtasks() {
+        return new ArrayList<Subtask>(subtaskList.values());
     }
 
     // Удаление всех подзадач
     public void clearSubtaskList() {
         subtaskList.clear();
         // Обновление статуса всех эпиков
-        for (Epic epic : epicList.values()) {
+        for (Epic epic : epicList.values()) { // Удаляем все подзадачи в эпиках и обновляем статусы
             epic.deleteAllSubtask();
-            epic.setStatusEpic(this);
+            setStatusEpic(epicList.get(epic.getId()));
         }
     }
 
@@ -150,17 +192,17 @@ public class TaskManager {
     }
 
     // Обновление подзадачи
-    public void updateSubtask(int subtaskId, Subtask subtask) {
-        subtask.setId(subtaskId);
-        subtaskList.put(subtaskId, subtask);
-        epicList.get(subtask.getParentId()).setStatusEpic(this);
+    public void updateSubtask(Subtask subtask) {
+        subtaskList.put(subtask.getId(), subtask);
+        setStatusEpic(epicList.get(subtask.getParentId()));
     }
 
     // Удаление подзадачи
     public void deleteSubtask(int id) {
         int parentEpicId = subtaskList.get(id).getParentId();
         Epic epic = epicList.get(parentEpicId);
-        epic.deleteSubtask(id, this);
+        epic.deleteSubtask(id);
+        setStatusEpic(epic);
         subtaskList.remove(id);
     }
 }

@@ -8,6 +8,12 @@ public class Task {
     private String text;
     private  StatusOfTask status;
 
+    /*private закрывает доступ к данным из вне, т.е. делает поля класса доступными только внутри самого класса.
+    Получать доступ к полям и менять значения можно через геттеры/сеттеры.
+    final это ключевое слово, которое указывает, что значение объекта не должно меняться.*/
+
+//    Так в том то и дело, что id не должен меняться, а при наличии сеттера id задачи можно изменить в любой момент
+
     public Task(String title, String text, StatusOfTask status) {
         this.title = title;
         this.text = text;
@@ -18,12 +24,24 @@ public class Task {
         this.id = id;
     }
 
+    public void setStatus(StatusOfTask status){
+        this.status = status;
+    }
+
     public int getId(){
         return id;
     }
 
     public StatusOfTask getStatus(){
         return status;
+    }
+
+    public String getTitle () {
+        return title;
+    }
+
+    public String getText(){
+        return text;
     }
 
     @Override
