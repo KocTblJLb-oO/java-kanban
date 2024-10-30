@@ -50,7 +50,6 @@ public class Task {
                 + "\n------------------------------------------------";
     }
 
-    // Непонятен смысл. Мы ищем по ID, а для чисел методы уже переопределены
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

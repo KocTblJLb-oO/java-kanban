@@ -34,14 +34,6 @@ public class TaskManager {
         taskList.put(id, task);
     }
 
-/*    // Показать все задачи
-    public void showAllTask() {
-        // Пользовательский вывод убрал, а вот про перенос в Main похоже на ошибку - он же не будет работать.
-        for (Task task : taskList.values()) {
-            System.out.println(task);
-        }
-    }*/
-
     // Получение всех задач
     public ArrayList<Task> getTasks() {
         return new ArrayList<Task>(taskList.values());
@@ -78,18 +70,10 @@ public class TaskManager {
         epicList.put(id, epic);
     }
 
-    /*    // Показать все задачи
-        public void showAllEpic() {
-            for (Epic epic : epicList.values()) {
-                System.out.println(epic);
-            }
-        }*/
-
     // Получение всех эпиков
     public ArrayList<Epic> getEpics() {
         return new ArrayList<Epic>(epicList.values());
     }
-
 
     // Удаление всех эпиков
     public void clearEpicList() {
@@ -162,14 +146,6 @@ public class TaskManager {
         epicList.get(epicId).addSubtask(id); // Добавляем id подзадачи в эпик
         setStatusEpic(epicList.get(epicId)); // И обновляем статус
     }
-
-    /*// Показать все подзадачи
-    public void showAllSubtask() {
-
-        for (Subtask subtask : subtaskList.values()) {
-            System.out.println(subtask);
-        }
-    }*/
 
     // Получение всех подзадач
     public ArrayList<Subtask> getSubtasks() {
