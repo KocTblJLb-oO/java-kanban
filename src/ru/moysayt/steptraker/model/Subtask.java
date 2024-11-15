@@ -1,10 +1,6 @@
 package ru.moysayt.steptraker.model;
 
 public class Subtask extends Task{
-   /* private int id;
-    private String title;
-    private String text;
-    private  StatusOfTask status;*/
     private int parentId;
 
     public Subtask(int parentEpicID, String title, String text, StatusOfTask status) {

@@ -3,16 +3,10 @@ package ru.moysayt.steptraker.model;
 import java.util.Objects;
 
 public class Task {
-    private int id; // Непонятно почему приват, а не финал
+    private int id;
     private String title;
     private String text;
     private  StatusOfTask status;
-
-    /*private закрывает доступ к данным из вне, т.е. делает поля класса доступными только внутри самого класса.
-    Получать доступ к полям и менять значения можно через геттеры/сеттеры.
-    final это ключевое слово, которое указывает, что значение объекта не должно меняться.*/
-
-//    Так в том то и дело, что id не должен меняться, а при наличии сеттера id задачи можно изменить в любой момент
 
     public Task(String title, String text, StatusOfTask status) {
         this.title = title;
@@ -20,7 +14,7 @@ public class Task {
         this.status = status;
     }
 
-    public void setId(int id){ // Работает только паблик, а это странно для ID
+    public void setId(int id){
         this.id = id;
     }
 
