@@ -3,6 +3,7 @@ package ru.moysayt.steptraker.service.history;
 import ru.moysayt.steptraker.model.Task;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public interface HistoryManager {
 
@@ -14,7 +15,7 @@ public interface HistoryManager {
     void addHistory(Task task);
 
     // Получение истории просмотра
-    ArrayList<Task> getHistory();
+    List<Task> getHistory();
 
 
 }

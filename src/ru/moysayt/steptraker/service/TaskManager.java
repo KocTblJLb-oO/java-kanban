@@ -3,16 +3,17 @@ package ru.moysayt.steptraker.service;
 import ru.moysayt.steptraker.model.Epic;
 import ru.moysayt.steptraker.model.Subtask;
 import ru.moysayt.steptraker.model.Task;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public interface TaskManager {
 
-     /*
+    /*
 ------------------------------------------------ МЕТОДЫ ТАСК МЕНЕДЖЕРА
- */
-// Получение ноыого id
-     int getNewTaskId();
-
+*/
+    //  Возвращает историю просмотров
+    List<Task> getHistory();
 /*
 ------------------------------------------------ РАБОТА С ЗАДАЧАМИ
  */

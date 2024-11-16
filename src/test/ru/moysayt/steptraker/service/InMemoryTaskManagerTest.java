@@ -43,7 +43,7 @@ class InMemoryTaskManagerTest {
     @Test
     void createTaskByEqualsId() {
         task1.setId(1);
-        task2.setId(inMemoryTaskManager.getNewTaskId());
+        task2.setId(inMemoryTaskManager.getId());
 
         inMemoryTaskManager.createTask(task1);
         inMemoryTaskManager.createTask(task2);

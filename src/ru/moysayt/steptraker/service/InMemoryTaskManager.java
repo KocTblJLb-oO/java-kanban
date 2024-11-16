@@ -6,25 +6,38 @@ import ru.moysayt.steptraker.model.StatusOfTask;
 import ru.moysayt.steptraker.model.Subtask;
 import ru.moysayt.steptraker.model.Task;
 import ru.moysayt.steptraker.service.history.HistoryManager;
-import ru.moysayt.steptraker.service.history.InMemoryHistoryManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
     private int taskId = 0;
-    private HashMap<Integer, Task> taskList = new HashMap<>();
-    private HashMap<Integer, Epic> epicList = new HashMap<>();
-    private HashMap<Integer, Subtask> subtaskList = new HashMap<>();
+    private final HashMap<Integer, Task> taskList = new HashMap<>();
+    private final HashMap<Integer, Epic> epicList = new HashMap<>();
+    private final HashMap<Integer, Subtask> subtaskList = new HashMap<>();
     public HistoryManager historyManager = Managers.getDefaultHistory();
 
     /*
 ------------------------------------------------ МЕТОДЫ ТАСК МЕНЕДЖЕРА
  */
-    @Override
-    public int getNewTaskId() {
+
+    private int getNewTaskId() {
         taskId++;
         return taskId;
+    }
+    /*
+    Добавил метод, чтобы можно было протестировать:
+    "проверьте, что задачи с заданным id и сгенерированным id не конфликтуют внутри менеджера"
+     */
+    public int getId(){
+        return getNewTaskId();
+    }
+
+    //  Возвращает историю просмотров
+    @Override
+    public List<Task> getHistory(){
+     return historyManager.getHistory();
     }
 
 /*
@@ -42,7 +55,7 @@ public class InMemoryTaskManager implements TaskManager {
     // Получение всех задач
     @Override
     public ArrayList<Task> getTasks() {
-        return new ArrayList<Task>(taskList.values());
+        return new ArrayList<>(taskList.values());
     }
 
     // Удаление всех задач
@@ -54,8 +67,9 @@ public class InMemoryTaskManager implements TaskManager {
     // Получение задачи по ID
     @Override
     public Task getTaskByID(int id) {
-        historyManager.addHistory(taskList.get(id));
-        return taskList.get(id);
+        final Task task = taskList.get(id);
+        historyManager.addHistory(task);
+        return task;
     }
 
     // Обновление задачи
@@ -85,7 +99,7 @@ public class InMemoryTaskManager implements TaskManager {
     // Получение всех эпиков
     @Override
     public ArrayList<Epic> getEpics() {
-        return new ArrayList<Epic>(epicList.values());
+        return new ArrayList<>(epicList.values());
     }
 
     // Удаление всех эпиков
@@ -98,8 +112,9 @@ public class InMemoryTaskManager implements TaskManager {
     // Получение эпика по ID
     @Override
     public Epic getEpicByID(int id) {
-        historyManager.addHistory(epicList.get(id));
-        return epicList.get(id);
+        final Epic epic = epicList.get(id);
+        historyManager.addHistory(epic);
+        return epic;
     }
 
     // Обновление эпика
@@ -170,7 +185,7 @@ public class InMemoryTaskManager implements TaskManager {
     // Получение всех подзадач
     @Override
     public ArrayList<Subtask> getSubtasks() {
-        return new ArrayList<Subtask>(subtaskList.values());
+        return new ArrayList<>(subtaskList.values());
     }
 
     // Удаление всех подзадач
@@ -187,8 +202,9 @@ public class InMemoryTaskManager implements TaskManager {
     // Получение подзадачи по ID
     @Override
     public Subtask getSubtaskByID(int id) {
-        historyManager.addHistory(subtaskList.get(id));
-        return subtaskList.get(id);
+        final Subtask subtask = subtaskList.get(id);
+        historyManager.addHistory(subtask);
+        return subtask;
     }
 
     // Обновление подзадачи

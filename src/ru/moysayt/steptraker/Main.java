@@ -40,9 +40,10 @@ public class Main {
         showAllSubtask(inMemoryTaskManager);
 
         // Меняем статус задачи и подзадачи
-        System.out.println("------------------------------------------------\n" +
-                "ИЗМЕНЕНИЕ СТАТУСА\n" +
-                "------------------------------------------------");
+        System.out.println("""
+                ------------------------------------------------
+                ИЗМЕНЕНИЕ СТАТУСА
+                ------------------------------------------------""");
         Task t1newStatus = inMemoryTaskManager.getTaskByID(1);
         t1newStatus.setStatus(StatusOfTask.IN_PROGRESS);
         inMemoryTaskManager.updateTask(t1newStatus);
@@ -55,9 +56,10 @@ public class Main {
         System.out.println(inMemoryTaskManager.getEpicByID(6));
 
         // Удалим одну задачу и эпик с двумя подзадачами
-        System.out.println("------------------------------------------------\n" +
-                "УДАЛЕНИЕ\n" +
-                "------------------------------------------------");
+        System.out.println("""
+                ------------------------------------------------
+                УДАЛЕНИЕ
+                ------------------------------------------------""");
         inMemoryTaskManager.deleteTask(2);
         inMemoryTaskManager.deleteEpic(3);
 
@@ -65,9 +67,10 @@ public class Main {
         showAllEpic(inMemoryTaskManager);
         showAllSubtask(inMemoryTaskManager);
 
-        System.out.println("------------------------------------------------\n" +
-                "ИСТОРИЯ\n" +
-                "------------------------------------------------");
+        System.out.println("""
+                ------------------------------------------------
+                ИСТОРИЯ
+                ------------------------------------------------""");
         showHistory((InMemoryHistoryManager) inMemoryTaskManager.historyManager);
     }
 
