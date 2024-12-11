@@ -7,6 +7,9 @@ import ru.moysayt.steptraker.model.Task;
 import ru.moysayt.steptraker.service.InMemoryTaskManager;
 import ru.moysayt.steptraker.service.history.InMemoryHistoryManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -93,7 +96,8 @@ public class Main {
     }
 
     public static void showHistory(InMemoryHistoryManager historyManager) {
-        for (Task task : historyManager.getHistory()) {
+        List<Task> history = new ArrayList<>(historyManager.getHistory());
+        for (Task task : history) {
             System.out.println(task);
         }
     }

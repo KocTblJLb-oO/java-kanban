@@ -6,6 +6,7 @@ import ru.moysayt.steptraker.model.StatusOfTask;
 import ru.moysayt.steptraker.model.Subtask;
 import ru.moysayt.steptraker.model.Task;
 import ru.moysayt.steptraker.service.history.HistoryManager;
+import ru.moysayt.steptraker.service.history.InMemoryHistoryManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,6 +83,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteTask(int id) {
         taskList.remove(id);
+        historyManager.remove(id); // Удаление из истории
     }
 
     /*
@@ -128,6 +130,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteEpic(int id) {
         epicList.get(id).deleteAllSubtask();
         epicList.remove(id);
+        historyManager.remove(id); // Удаление из истории
     }
 
     // Получение подзадач эпика
@@ -222,6 +225,7 @@ public class InMemoryTaskManager implements TaskManager {
         epic.deleteSubtask(id);
         setStatusEpic(epic);
         subtaskList.remove(id);
+        historyManager.remove(id); // Удаление из истории
     }
 
 }
