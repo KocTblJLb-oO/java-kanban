@@ -31,11 +31,11 @@ public class Main {
         inMemoryTaskManager.createSubtask(3, s2);
 
         // Создаём эпик с одной подзадачей
-        Epic e2 = new Epic("Эпик 2. С одной подзадачей", "Описание эпика 2. " + "С одной подзадачей"
-                , StatusOfTask.NEW);
+        Epic e2 = new Epic("Эпик 2. С одной подзадачей", "Описание эпика 2. " + "С одной подзадачей",
+                StatusOfTask.NEW);
         inMemoryTaskManager.createEpic(e2);
-        Subtask s3 = new Subtask(6, "Подзадача 3. С эпиком с 1 зад.", "Описание подзадачи 3. С эпиком с 1 зад."
-                , StatusOfTask.NEW);
+        Subtask s3 = new Subtask(6, "Подзадача 3. С эпиком с 1 зад.",
+                "Описание подзадачи 3. С эпиком с 1 зад.", StatusOfTask.NEW);
         inMemoryTaskManager.createSubtask(6, s3);
 
         showAllTask(inMemoryTaskManager);
