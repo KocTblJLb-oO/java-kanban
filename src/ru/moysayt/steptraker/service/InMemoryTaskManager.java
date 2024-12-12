@@ -6,8 +6,6 @@ import ru.moysayt.steptraker.model.StatusOfTask;
 import ru.moysayt.steptraker.model.Subtask;
 import ru.moysayt.steptraker.model.Task;
 import ru.moysayt.steptraker.service.history.HistoryManager;
-import ru.moysayt.steptraker.service.history.InMemoryHistoryManager;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +15,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Task> taskList = new HashMap<>();
     private final HashMap<Integer, Epic> epicList = new HashMap<>();
     private final HashMap<Integer, Subtask> subtaskList = new HashMap<>();
-    public HistoryManager historyManager = Managers.getDefaultHistory();
+    public HistoryManager<Task> historyManager = Managers.getDefaultHistory();
 
     /*
 ------------------------------------------------ МЕТОДЫ ТАСК МЕНЕДЖЕРА
@@ -210,7 +208,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void clearSubtaskList() {
 
         for (int subtaskId : subtaskList.keySet()){ // Удаление всх сабтасков из истории
-            historyManager.remove(taskId);
+            historyManager.remove(subtaskId);
         }
 
         subtaskList.clear();
