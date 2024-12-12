@@ -6,7 +6,7 @@ public class Task {
     private int id;
     private String title;
     private String text;
-    private  StatusOfTask status;
+    private StatusOfTask status;
 
     public Task(String title, String text, StatusOfTask status) {
         this.title = title;
@@ -14,27 +14,27 @@ public class Task {
         this.status = status;
     }
 
-    public void setId(int id){
+    public void setId(int id) {
         this.id = id;
     }
 
-    public void setStatus(StatusOfTask status){
+    public void setStatus(StatusOfTask status) {
         this.status = status;
     }
 
-    public int getId(){
+    public int getId() {
         return id;
     }
 
-    public StatusOfTask getStatus(){
+    public StatusOfTask getStatus() {
         return status;
     }
 
-    public String getTitle () {
+    public String getTitle() {
         return title;
     }
 
-    public String getText(){
+    public String getText() {
         return text;
     }
 
