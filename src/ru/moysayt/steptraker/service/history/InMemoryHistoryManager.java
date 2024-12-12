@@ -5,8 +5,6 @@ import ru.moysayt.steptraker.model.Task;
 import java.util.*;
 
 public class InMemoryHistoryManager<T extends Task> implements HistoryManager<T> {
-    /*   private final List<Task> taskHistory = new LinkedList<>();
-       private static final int MAX_SIZE_HISTORY = 10;*/
     private final HashMap<Integer, NodeHistory<T>> historyMap = new HashMap<>();
     private NodeHistory<T> head;
     private NodeHistory<T> tail;
@@ -20,9 +18,42 @@ public class InMemoryHistoryManager<T extends Task> implements HistoryManager<T>
     @Override
     public void addHistory(T task) {
         if (historyMap.containsKey(task.getId())) {
-            remove(task.getId());
+            removeNode(task.getId());
+            historyMap.remove(task.getId());
         }
+        linkLast(task);
+        size++;
+    }
 
+    // Получение истории просмотра
+    @Override
+    public List<Task> getHistory() {
+        List<Task> listHistory = new ArrayList<>();
+        listHistory = getTasks();
+        return listHistory;
+    }
+
+    // Удаление из истории
+    @Override
+    public void remove(int id) {
+        if (!historyMap.containsKey(id)) {
+            return;
+        }
+        removeNode(id);
+        historyMap.remove(id);
+        size--;
+    }
+
+    @Override
+    public int getSize() {
+        return size;
+    }
+
+    /*
+    ------------------------------------------------ Методы для работы с NodeTask
+     */
+
+    private void linkLast(T task) {
         final NodeHistory<T> oldTail = tail;
         final NodeHistory<T> newTail = new NodeHistory<>(tail, task, null);
         tail = newTail;
@@ -32,29 +63,20 @@ public class InMemoryHistoryManager<T extends Task> implements HistoryManager<T>
         } else {
             oldTail.next = tail;
         }
-
         historyMap.put(task.getId(), tail);
-        size++;
     }
 
-    // Получение истории просмотра
-    @Override
-    public List<Task> getHistory() {
+    private List<Task> getTasks(){
         List<Task> listHistory = new ArrayList<>();
         NodeHistory<T> node = head;
-        while (!(node == null)){ // Собираем элементы, пока не найдём хвост
+        while (!(node == null)) { // Собираем элементы, пока не найдём хвост
             listHistory.add(node.task);
             node = node.next;
         }
         return listHistory;
     }
 
-    // Удаление из истории
-    @Override
-    public void remove(int id) {
-        if(!historyMap.containsKey(id)){
-            return;
-        }
+    private void removeNode(int id){
         NodeHistory<T> node = historyMap.get(id);
         NodeHistory<T> prev = node.prev;
         NodeHistory<T> next = node.next;
@@ -69,12 +91,5 @@ public class InMemoryHistoryManager<T extends Task> implements HistoryManager<T>
             prev.next = next; // У предыдущего меняем хвост
             next.prev = prev; // , у следующего голову.
         }
-        historyMap.remove(id);
-        size--;
-    }
-
-    @Override
-    public int getSize() {
-        return size;
     }
 }
