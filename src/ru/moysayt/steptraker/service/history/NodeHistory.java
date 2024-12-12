@@ -7,7 +7,7 @@ public class NodeHistory<T extends Task> {
     public NodeHistory<T> next;
     public NodeHistory<T> prev;
 
-    public NodeHistory(NodeHistory<T> prev, T task, NodeHistory<T> next){
+    public NodeHistory(NodeHistory<T> prev, T task, NodeHistory<T> next) {
         this.prev = prev;
         this.task = task;
         this.next = next;

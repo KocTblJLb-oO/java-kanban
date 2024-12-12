@@ -66,7 +66,7 @@ public class InMemoryHistoryManager<T extends Task> implements HistoryManager<T>
         historyMap.put(task.getId(), tail);
     }
 
-    private List<Task> getTasks(){
+    private List<Task> getTasks() {
         List<Task> listHistory = new ArrayList<>();
         NodeHistory<T> node = head;
         while (!(node == null)) { // Собираем элементы, пока не найдём хвост
@@ -76,7 +76,7 @@ public class InMemoryHistoryManager<T extends Task> implements HistoryManager<T>
         return listHistory;
     }
 
-    private void removeNode(int id){
+    private void removeNode(int id) {
         NodeHistory<T> node = historyMap.get(id);
         NodeHistory<T> prev = node.prev;
         NodeHistory<T> next = node.next;

@@ -6,6 +6,7 @@ import ru.moysayt.steptraker.model.StatusOfTask;
 import ru.moysayt.steptraker.model.Subtask;
 import ru.moysayt.steptraker.model.Task;
 import ru.moysayt.steptraker.service.history.HistoryManager;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,18 +26,19 @@ public class InMemoryTaskManager implements TaskManager {
         taskId++;
         return taskId;
     }
+
     /*
     Добавил метод, чтобы можно было протестировать:
     "проверьте, что задачи с заданным id и сгенерированным id не конфликтуют внутри менеджера"
      */
-    public int getId(){
+    public int getId() {
         return getNewTaskId();
     }
 
     //  Возвращает историю просмотров
     @Override
-    public List<Task> getHistory(){
-     return historyManager.getHistory();
+    public List<Task> getHistory() {
+        return historyManager.getHistory();
     }
 
 /*
@@ -60,7 +62,7 @@ public class InMemoryTaskManager implements TaskManager {
     // Удаление всех задач
     @Override
     public void clearTaskList() {
-        for (int taskId : taskList.keySet()){ // Удаление всх задач из истории
+        for (int taskId : taskList.keySet()) { // Удаление всх задач из истории
             historyManager.remove(taskId);
         }
 
@@ -109,10 +111,10 @@ public class InMemoryTaskManager implements TaskManager {
     // Удаление всех эпиков
     @Override
     public void clearEpicList() {
-        for (int epicId : epicList.keySet()){ // Удаление всх эпиков из истории
+        for (int epicId : epicList.keySet()) { // Удаление всх эпиков из истории
             ArrayList<Integer> subtasks = epicList.get(epicId).getEpicSubtask();
 
-            for (int subtaskId : subtasks){ // Удаление всех сабтасков эпика из истории
+            for (int subtaskId : subtasks) { // Удаление всех сабтасков эпика из истории
                 historyManager.remove(subtaskId);
             }
 
@@ -207,7 +209,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void clearSubtaskList() {
 
-        for (int subtaskId : subtaskList.keySet()){ // Удаление всх сабтасков из истории
+        for (int subtaskId : subtaskList.keySet()) { // Удаление всх сабтасков из истории
             historyManager.remove(subtaskId);
         }
 
