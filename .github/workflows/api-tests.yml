@@ -2,7 +2,33 @@ name: Java Tests
 
 on:
   pull_request:
+    branches:
+      - main
+      - '*'
 
 jobs:
   build:
-    uses: yandex-praktikum/java-kanban/.github/workflows/api-tests.yml@ci
+    runs-on: ubuntu-latest
+
+    steps:
+      # Шаг 1: Клонирование репозитория
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Шаг 2: Установка JDK
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 11
+
+      # Шаг 3: Компиляция тестов
+      - name: Compile Tests
+        run: |
+          find src/test -type f -name "*.java" > tests.txt
+          mkdir -p out
+          javac -d out -cp ".:libs/*" @tests.txt
+
+      # Шаг 4: Запуск тестов
+      - name: Run Tests
+        run: |
+          java -cp "out:libs/*" org.junit.runner.JUnitCore <TestClassName>
