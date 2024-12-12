@@ -28,7 +28,7 @@ public class InMemoryHistoryManager<T extends Task> implements HistoryManager<T>
     // Получение истории просмотра
     @Override
     public List<Task> getHistory() {
-        List<Task> listHistory = new ArrayList<>();
+        List<Task> listHistory;
         listHistory = getTasks();
         return listHistory;
     }

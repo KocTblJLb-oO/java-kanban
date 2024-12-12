@@ -1,5 +1,6 @@
 package ru.moysayt.steptraker.manager;
 
+import ru.moysayt.steptraker.model.Task;
 import ru.moysayt.steptraker.service.InMemoryTaskManager;
 import ru.moysayt.steptraker.service.TaskManager;
 import ru.moysayt.steptraker.service.history.HistoryManager;
@@ -10,7 +11,7 @@ public class Managers {
         return new InMemoryTaskManager();
     }
 
-    public static HistoryManager getDefaultHistory() {
-        return new InMemoryHistoryManager();
+    public static HistoryManager<Task> getDefaultHistory() {
+        return new InMemoryHistoryManager<>();
     }
 }
