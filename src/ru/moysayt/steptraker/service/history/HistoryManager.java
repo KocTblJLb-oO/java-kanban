@@ -2,7 +2,6 @@ package ru.moysayt.steptraker.service.history;
 
 import ru.moysayt.steptraker.model.Task;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface HistoryManager<T extends Task> {
