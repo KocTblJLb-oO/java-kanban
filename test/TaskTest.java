@@ -1,9 +1,9 @@
-package ru.moysayt.steptraker.model;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.moysayt.steptraker.model.StatusOfTask;
+import ru.moysayt.steptraker.model.Task;
 
 class TaskTest {
 
@@ -12,8 +12,8 @@ class TaskTest {
 
     @BeforeEach
     void startTest() {
-        task1 = new Task("test", "testTask", StatusOfTask.NEW);
-        task2 = new Task("test", "testTask", StatusOfTask.NEW);
+        task1 = new Task("", "testTask", StatusOfTask.NEW);
+        task2 = new Task("", "testTask", StatusOfTask.NEW);
     }
 
     // проверьте, что экземпляры класса Task равны друг другу, если равен их id;

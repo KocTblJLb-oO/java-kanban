@@ -1,4 +1,4 @@
-package ru.moysayt.steptraker.service.history;
+package moysayt.steptraker.test.service.history;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,10 +23,10 @@ class InMemoryHistoryManagerTest {
     @BeforeEach
     void startTest() {
         inMemoryTaskManager = new InMemoryTaskManager();
-        task1 = new Task("test", "testTask", StatusOfTask.NEW);
-        task2 = new Task("test", "testTask", StatusOfTask.NEW);
-        epic = new Epic("test", "testEpic", StatusOfTask.NEW);
-        subtask = new Subtask(1, "test", "testSubtask", StatusOfTask.NEW);
+        task1 = new Task("", "testTask", StatusOfTask.NEW);
+        task2 = new Task("", "testTask", StatusOfTask.NEW);
+        epic = new Epic("", "testEpic", StatusOfTask.NEW);
+        subtask = new Subtask(1, "", "testSubtask", StatusOfTask.NEW);
 
         task1.setId(1);
         epic.setId(2);

@@ -1,6 +1,4 @@
-package ru.moysayt.steptraker.service;
-
-import static org.junit.jupiter.api.Assertions.*;
+package moysayt.steptraker.test.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,6 +6,9 @@ import ru.moysayt.steptraker.model.Epic;
 import ru.moysayt.steptraker.model.StatusOfTask;
 import ru.moysayt.steptraker.model.Task;
 import ru.moysayt.steptraker.model.Subtask;
+import ru.moysayt.steptraker.service.InMemoryTaskManager;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class InMemoryTaskManagerTest {
     InMemoryTaskManager inMemoryTaskManager;
@@ -19,10 +20,10 @@ class InMemoryTaskManagerTest {
     @BeforeEach
     void startTest() {
         inMemoryTaskManager = new InMemoryTaskManager();
-        task1 = new Task("test", "testTask", StatusOfTask.NEW);
-        task2 = new Task("test", "testTask", StatusOfTask.NEW);
-        epic = new Epic("test", "testEpic", StatusOfTask.NEW);
-        subtask = new Subtask(1, "test", "testSubtask", StatusOfTask.NEW);
+        task1 = new Task("", "testTask", StatusOfTask.NEW);
+        task2 = new Task("", "testTask", StatusOfTask.NEW);
+        epic = new Epic("", "testEpic", StatusOfTask.NEW);
+        subtask = new Subtask(1, "", "testSubtask", StatusOfTask.NEW);
     }
 
     // проверьте, что InMemoryTaskManager действительно добавляет задачи разного типа и может найти их по id;

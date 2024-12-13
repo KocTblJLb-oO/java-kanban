@@ -1,10 +1,9 @@
-package ru.moysayt.steptraker.manager;
+package moysayt.steptraker.test.manager;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import ru.moysayt.steptraker.manager.Managers;
 import ru.moysayt.steptraker.service.TaskManager;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ManagersTest {
 
