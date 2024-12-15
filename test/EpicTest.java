@@ -1,7 +1,8 @@
-package ru.moysayt.steptraker.model;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.moysayt.steptraker.model.Epic;
+import ru.moysayt.steptraker.model.StatusOfTask;
+import ru.moysayt.steptraker.model.Task;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,8 +13,8 @@ class EpicTest {
 
     @BeforeEach
     void startTest() {
-        epic1 = new Epic("test", "testTask", StatusOfTask.NEW);
-        epic2 = new Epic("test", "testTask", StatusOfTask.NEW);
+        epic1 = new Epic("", "testTask", StatusOfTask.NEW);
+        epic2 = new Epic("", "testTask", StatusOfTask.NEW);
     }
 
     // проверьте, что наследники класса Task равны друг другу, если равен их id;
