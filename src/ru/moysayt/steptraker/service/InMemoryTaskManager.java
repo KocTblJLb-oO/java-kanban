@@ -142,7 +142,7 @@ public class InMemoryTaskManager implements TaskManager {
         historyManager.remove(id); // Удаление из истории
 
         ArrayList<Integer> subtasks = epicList.get(id).getEpicSubtask(); // Удаление из истории сабтасков эпика
-        for (int subtaskId : subtasks){
+        for (int subtaskId : subtasks) {
             historyManager.remove(subtaskId);
         }
 
