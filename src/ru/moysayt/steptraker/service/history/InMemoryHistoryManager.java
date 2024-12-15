@@ -17,29 +17,21 @@ public class InMemoryHistoryManager<T extends Task> implements HistoryManager<T>
     // Сохранение истории просмотра
     @Override
     public void addHistory(T task) {
-        if (historyMap.containsKey(task.getId())) {
-            removeNode(task.getId());
-            historyMap.remove(task.getId());
-        }
-        linkLast(task);
+        removeNode(historyMap.remove(task.getId()));
+        historyMap.put(task.getId(), linkLast(task));
         size++;
     }
 
     // Получение истории просмотра
     @Override
     public List<Task> getHistory() {
-        List<Task> listHistory;
-        listHistory = getTasks();
-        return listHistory;
+        return getTasks();
     }
 
     // Удаление из истории
     @Override
     public void remove(int id) {
-        if (!historyMap.containsKey(id)) {
-            return;
-        }
-        removeNode(id);
+        removeNode(historyMap.remove(id));
         historyMap.remove(id);
         size--;
     }
@@ -53,7 +45,7 @@ public class InMemoryHistoryManager<T extends Task> implements HistoryManager<T>
     ------------------------------------------------ Методы для работы с NodeTask
      */
 
-    private void linkLast(T task) {
+    private NodeHistory<T> linkLast(T task) {
         final NodeHistory<T> oldTail = tail;
         final NodeHistory<T> newTail = new NodeHistory<>(tail, task, null);
         tail = newTail;
@@ -63,21 +55,24 @@ public class InMemoryHistoryManager<T extends Task> implements HistoryManager<T>
         } else {
             oldTail.next = tail;
         }
-        historyMap.put(task.getId(), tail);
+        return tail;
     }
 
     private List<Task> getTasks() {
         List<Task> listHistory = new ArrayList<>();
         NodeHistory<T> node = head;
-        while (!(node == null)) { // Собираем элементы, пока не найдём хвост
+        while (node != null) { // Собираем элементы, пока не найдём хвост
             listHistory.add(node.task);
             node = node.next;
         }
         return listHistory;
     }
 
-    private void removeNode(int id) {
-        NodeHistory<T> node = historyMap.get(id);
+    private void removeNode(NodeHistory<T> node) {
+        if (node == null) {
+            return;
+        }
+
         NodeHistory<T> prev = node.prev;
         NodeHistory<T> next = node.next;
 

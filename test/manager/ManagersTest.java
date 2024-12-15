@@ -1,4 +1,4 @@
-package moysayt.steptraker.test.manager;
+package manager;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
