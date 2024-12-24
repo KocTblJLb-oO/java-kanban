@@ -4,14 +4,20 @@ import ru.moysayt.steptraker.model.Epic;
 import ru.moysayt.steptraker.model.StatusOfTask;
 import ru.moysayt.steptraker.model.Subtask;
 import ru.moysayt.steptraker.model.Task;
+import ru.moysayt.steptraker.service.FileBackedTaskManager;
 import ru.moysayt.steptraker.service.InMemoryTaskManager;
 import ru.moysayt.steptraker.service.history.InMemoryHistoryManager;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         System.out.println("Поехали!");
         InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
+
 
         // Создаём две задачи
         Task t1 = new Task("Заголовок 1", "Описание задачи 1", StatusOfTask.NEW);
@@ -28,11 +34,11 @@ public class Main {
         inMemoryTaskManager.createSubtask(3, s2);
 
         // Создаём эпик с одной подзадачей
-        Epic e2 = new Epic("Эпик 2. С одной подзадачей", "Описание эпика 2. " + "С одной подзадачей"
-                , StatusOfTask.NEW);
+        Epic e2 = new Epic("Эпик 2. С одной подзадачей", "Описание эпика 2. " + "С одной подзадачей",
+                StatusOfTask.NEW);
         inMemoryTaskManager.createEpic(e2);
-        Subtask s3 = new Subtask(6, "Подзадача 3. С эпиком с 1 зад.", "Описание подзадачи 3. С эпиком с 1 зад."
-                , StatusOfTask.NEW);
+        Subtask s3 = new Subtask(6, "Подзадача 3. С эпиком с 1 зад.",
+                "Описание подзадачи 3. С эпиком с 1 зад.", StatusOfTask.NEW);
         inMemoryTaskManager.createSubtask(6, s3);
 
         showAllTask(inMemoryTaskManager);
@@ -71,7 +77,55 @@ public class Main {
                 ------------------------------------------------
                 ИСТОРИЯ
                 ------------------------------------------------""");
-        showHistory((InMemoryHistoryManager) inMemoryTaskManager.historyManager);
+        showHistory((InMemoryHistoryManager<Task>) inMemoryTaskManager.historyManager);
+
+        System.out.println("""
+                ------------------------------------------------
+                ------------------------------------------------
+                ------------------------------------------------
+                ФАЙЛОВЫЙ МЕНЕДЖЕР
+                ------------------------------------------------""");
+
+
+        // Создаём временный файл и получаем его путь
+        File file = File.createTempFile("fileForTask-", ".csv");
+        System.out.println(file.toPath());
+
+        // Создаём файловый менеджер
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
+
+        // Создаём задачи
+        fileBackedTaskManager.createTask(t1);
+        fileBackedTaskManager.createTask(t2);
+
+        // Создаём эпик и 2 подзадачи
+        fileBackedTaskManager.createEpic(e1);
+        fileBackedTaskManager.createSubtask(fileBackedTaskManager.getEpics().getFirst().getId(), s1);
+        fileBackedTaskManager.createSubtask(fileBackedTaskManager.getEpics().getFirst().getId(), s2);
+
+        // Эпик и подзадача с другим статусом
+        fileBackedTaskManager.createEpic(e2);
+        fileBackedTaskManager.createSubtask(e2.getId(), s3NewStatus);
+
+        // Удалим такс с id 1
+        fileBackedTaskManager.deleteTask(1);
+
+        System.out.println("""
+                ------------------------------------------------
+                Дополнительное задание. Реализуем пользовательский сценарий
+                ------------------------------------------------""");
+
+        FileBackedTaskManager fileBackedTaskManager2 = FileBackedTaskManager.loadFromFile(file);
+
+        for (Task task : fileBackedTaskManager2.getTasks()){
+            System.out.println(task);
+        }
+        for (Epic epic : fileBackedTaskManager2.getEpics()){
+            System.out.println(epic);
+        }
+        for (Subtask subtask : fileBackedTaskManager2.getSubtasks()){
+            System.out.println(subtask);
+        }
     }
 
     public static void showAllTask(InMemoryTaskManager inMemoryTaskManager) {
@@ -92,8 +146,9 @@ public class Main {
         }
     }
 
-    public static void showHistory(InMemoryHistoryManager historyManager) {
-        for (Task task : historyManager.getHistory()) {
+    public static void showHistory(InMemoryHistoryManager<Task> historyManager) {
+        ArrayList<Task> history = new ArrayList<>(historyManager.getHistory());
+        for (Task task : history) {
             System.out.println(task);
         }
     }

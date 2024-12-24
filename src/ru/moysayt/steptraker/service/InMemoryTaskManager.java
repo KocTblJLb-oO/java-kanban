@@ -16,7 +16,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Task> taskList = new HashMap<>();
     private final HashMap<Integer, Epic> epicList = new HashMap<>();
     private final HashMap<Integer, Subtask> subtaskList = new HashMap<>();
-    public HistoryManager historyManager = Managers.getDefaultHistory();
+    public HistoryManager<Task> historyManager = Managers.getDefaultHistory();
 
     /*
 ------------------------------------------------ МЕТОДЫ ТАСК МЕНЕДЖЕРА
@@ -26,18 +26,24 @@ public class InMemoryTaskManager implements TaskManager {
         taskId++;
         return taskId;
     }
+
     /*
     Добавил метод, чтобы можно было протестировать:
     "проверьте, что задачи с заданным id и сгенерированным id не конфликтуют внутри менеджера"
      */
-    public int getId(){
+    public int getId() {
         return getNewTaskId();
     }
 
     //  Возвращает историю просмотров
     @Override
-    public List<Task> getHistory(){
-     return historyManager.getHistory();
+    public List<Task> getHistory() {
+        return historyManager.getHistory();
+    }
+
+    // При восстановлении задач из файла необходимо установить счётчик ID в соответствии с файлом
+    public void setStartId(int i) {
+        taskId = i;
     }
 
 /*
@@ -61,6 +67,10 @@ public class InMemoryTaskManager implements TaskManager {
     // Удаление всех задач
     @Override
     public void clearTaskList() {
+        for (int taskId : taskList.keySet()) { // Удаление всх задач из истории
+            historyManager.remove(taskId);
+        }
+
         taskList.clear();
     }
 
@@ -82,6 +92,12 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteTask(int id) {
         taskList.remove(id);
+        historyManager.remove(id); // Удаление из истории
+    }
+
+    // Метод добавляет задачу в список. Необходим для восстановления задач из файла
+    public void addTaskInTaskList(Task task) {
+        taskList.put(task.getId(), task);
     }
 
     /*
@@ -105,6 +121,13 @@ public class InMemoryTaskManager implements TaskManager {
     // Удаление всех эпиков
     @Override
     public void clearEpicList() {
+        for (int epicId : epicList.keySet()) { // Удаление всх эпиков из истории
+            historyManager.remove(epicId);
+        }
+        for (int subtaskId : subtaskList.keySet()) { // Удаление всех сабтасков из истории
+            historyManager.remove(subtaskId);
+        }
+
         epicList.clear();
         subtaskList.clear(); // Удаляем все подзадачи
     }
@@ -126,6 +149,13 @@ public class InMemoryTaskManager implements TaskManager {
     // Удаление эпика
     @Override
     public void deleteEpic(int id) {
+        historyManager.remove(id); // Удаление из истории
+
+        ArrayList<Integer> subtasks = epicList.get(id).getEpicSubtask(); // Удаление из истории сабтасков эпика
+        for (int subtaskId : subtasks) {
+            historyManager.remove(subtaskId);
+        }
+
         epicList.get(id).deleteAllSubtask();
         epicList.remove(id);
     }
@@ -168,6 +198,11 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    // Метод добавляет эпик в список. Необходим для восстановления задач из файла
+    public void addEpicInEpicList(Epic epic) {
+        epicList.put(epic.getId(), epic);
+    }
+
     /*
 ------------------------------------------------ РАБОТА С ПОДЗАДАЧАМИ
  */
@@ -191,7 +226,13 @@ public class InMemoryTaskManager implements TaskManager {
     // Удаление всех подзадач
     @Override
     public void clearSubtaskList() {
+
+        for (int subtaskId : subtaskList.keySet()) { // Удаление всх сабтасков из истории
+            historyManager.remove(subtaskId);
+        }
+
         subtaskList.clear();
+
         // Обновление статуса всех эпиков
         for (Epic epic : epicList.values()) { // Удаляем все подзадачи в эпиках и обновляем статусы
             epic.deleteAllSubtask();
@@ -222,6 +263,13 @@ public class InMemoryTaskManager implements TaskManager {
         epic.deleteSubtask(id);
         setStatusEpic(epic);
         subtaskList.remove(id);
+        historyManager.remove(id); // Удаление из истории
+    }
+
+    // Метод добавляет сабтаск в список. Необходим для восстановления задач из файла
+    public void addTSubtaskInSubtaskList(Subtask subtask) {
+        subtaskList.put(subtask.getId(), subtask);
+        epicList.get(subtask.getParentId()).addSubtask(subtask.getId()); // Добавляем сабтаск в эпик
     }
 
 }
