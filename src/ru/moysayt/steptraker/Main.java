@@ -7,6 +7,8 @@ import ru.moysayt.steptraker.model.Task;
 import ru.moysayt.steptraker.service.InMemoryTaskManager;
 import ru.moysayt.steptraker.service.history.InMemoryHistoryManager;
 
+import java.util.ArrayList;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -28,11 +30,11 @@ public class Main {
         inMemoryTaskManager.createSubtask(3, s2);
 
         // Создаём эпик с одной подзадачей
-        Epic e2 = new Epic("Эпик 2. С одной подзадачей", "Описание эпика 2. " + "С одной подзадачей"
-                , StatusOfTask.NEW);
+        Epic e2 = new Epic("Эпик 2. С одной подзадачей", "Описание эпика 2. " + "С одной подзадачей",
+                StatusOfTask.NEW);
         inMemoryTaskManager.createEpic(e2);
-        Subtask s3 = new Subtask(6, "Подзадача 3. С эпиком с 1 зад.", "Описание подзадачи 3. С эпиком с 1 зад."
-                , StatusOfTask.NEW);
+        Subtask s3 = new Subtask(6, "Подзадача 3. С эпиком с 1 зад.",
+                "Описание подзадачи 3. С эпиком с 1 зад.", StatusOfTask.NEW);
         inMemoryTaskManager.createSubtask(6, s3);
 
         showAllTask(inMemoryTaskManager);
@@ -71,7 +73,7 @@ public class Main {
                 ------------------------------------------------
                 ИСТОРИЯ
                 ------------------------------------------------""");
-        showHistory((InMemoryHistoryManager) inMemoryTaskManager.historyManager);
+        showHistory((InMemoryHistoryManager<Task>) inMemoryTaskManager.historyManager);
     }
 
     public static void showAllTask(InMemoryTaskManager inMemoryTaskManager) {
@@ -92,8 +94,9 @@ public class Main {
         }
     }
 
-    public static void showHistory(InMemoryHistoryManager historyManager) {
-        for (Task task : historyManager.getHistory()) {
+    public static void showHistory(InMemoryHistoryManager<Task> historyManager) {
+        ArrayList<Task> history = new ArrayList<>(historyManager.getHistory());
+        for (Task task : history) {
             System.out.println(task);
         }
     }

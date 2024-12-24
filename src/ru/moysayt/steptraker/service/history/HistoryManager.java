@@ -2,20 +2,22 @@ package ru.moysayt.steptraker.service.history;
 
 import ru.moysayt.steptraker.model.Task;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public interface HistoryManager {
+public interface HistoryManager<T extends Task> {
 
      /*
 ------------------------------------------------ История задач
  */
 
-    // Сохранение истории простмотра
-    void addHistory(Task task);
+    // Сохранение истории просмотра
+    void addHistory(T task);
 
     // Получение истории просмотра
     List<Task> getHistory();
 
+    //Удаление истории из просмотра
+    void remove(int id);
 
+    int getSize();
 }
