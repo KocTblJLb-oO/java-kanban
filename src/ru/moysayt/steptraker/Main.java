@@ -4,16 +4,20 @@ import ru.moysayt.steptraker.model.Epic;
 import ru.moysayt.steptraker.model.StatusOfTask;
 import ru.moysayt.steptraker.model.Subtask;
 import ru.moysayt.steptraker.model.Task;
+import ru.moysayt.steptraker.service.FileBackedTaskManager;
 import ru.moysayt.steptraker.service.InMemoryTaskManager;
 import ru.moysayt.steptraker.service.history.InMemoryHistoryManager;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         System.out.println("Поехали!");
         InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
+
 
         // Создаём две задачи
         Task t1 = new Task("Заголовок 1", "Описание задачи 1", StatusOfTask.NEW);
@@ -74,6 +78,54 @@ public class Main {
                 ИСТОРИЯ
                 ------------------------------------------------""");
         showHistory((InMemoryHistoryManager<Task>) inMemoryTaskManager.historyManager);
+
+        System.out.println("""
+                ------------------------------------------------
+                ------------------------------------------------
+                ------------------------------------------------
+                ФАЙЛОВЫЙ МЕНЕДЖЕР
+                ------------------------------------------------""");
+
+
+        // Создаём временный файл и получаем его путь
+        File file = File.createTempFile("fileForTask-", ".csv");
+        System.out.println(file.toPath());
+
+        // Создаём файловый менеджер
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
+
+        // Создаём задачи
+        fileBackedTaskManager.createTask(t1);
+        fileBackedTaskManager.createTask(t2);
+
+        // Создаём эпик и 2 подзадачи
+        fileBackedTaskManager.createEpic(e1);
+        fileBackedTaskManager.createSubtask(fileBackedTaskManager.getEpics().getFirst().getId(), s1);
+        fileBackedTaskManager.createSubtask(fileBackedTaskManager.getEpics().getFirst().getId(), s2);
+
+        // Эпик и подзадача с другим статусом
+        fileBackedTaskManager.createEpic(e2);
+        fileBackedTaskManager.createSubtask(e2.getId(), s3NewStatus);
+
+        // Удалим такс с id 1
+        fileBackedTaskManager.deleteTask(1);
+
+        System.out.println("""
+                ------------------------------------------------
+                Дополнительное задание. Реализуем пользовательский сценарий
+                ------------------------------------------------""");
+
+        FileBackedTaskManager fileBackedTaskManager2 = FileBackedTaskManager.loadFromFile(file);
+
+        for (Task task : fileBackedTaskManager2.getTasks()) {
+            System.out.println(task);
+        }
+        for (Epic epic : fileBackedTaskManager2.getEpics()) {
+            System.out.println(epic);
+        }
+        for (Subtask subtask : fileBackedTaskManager2.getSubtasks()) {
+            System.out.println(subtask);
+        }
     }
 
     public static void showAllTask(InMemoryTaskManager inMemoryTaskManager) {
