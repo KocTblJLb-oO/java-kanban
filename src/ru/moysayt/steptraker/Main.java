@@ -117,13 +117,13 @@ public class Main {
 
         FileBackedTaskManager fileBackedTaskManager2 = FileBackedTaskManager.loadFromFile(file);
 
-        for (Task task : fileBackedTaskManager2.getTasks()){
+        for (Task task : fileBackedTaskManager2.getTasks()) {
             System.out.println(task);
         }
-        for (Epic epic : fileBackedTaskManager2.getEpics()){
+        for (Epic epic : fileBackedTaskManager2.getEpics()) {
             System.out.println(epic);
         }
-        for (Subtask subtask : fileBackedTaskManager2.getSubtasks()){
+        for (Subtask subtask : fileBackedTaskManager2.getSubtasks()) {
             System.out.println(subtask);
         }
     }

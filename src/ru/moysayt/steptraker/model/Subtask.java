@@ -1,7 +1,7 @@
 package ru.moysayt.steptraker.model;
 
 public class Subtask extends Task {
-    private int parentId;
+    private final int parentId;
 
     public Subtask(int parentEpicID, String title, String text, StatusOfTask status) {
         super(title, text, status);
