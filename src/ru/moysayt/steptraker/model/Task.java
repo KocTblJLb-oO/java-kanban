@@ -59,7 +59,7 @@ public class Task {
         return Objects.hash(id, title, text, status);
     }
 
-    public TypeOfTask getTypeOfTask(){
+    public TypeOfTask getTypeOfTask() {
         return TypeOfTask.TASK;
     }
 
