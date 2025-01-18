@@ -1,5 +1,7 @@
 package ru.moysayt.steptraker.model;
 
+import ru.moysayt.steptraker.service.directory.TypeOfTask;
+
 public class Subtask extends Task {
     private final int parentId;
 
@@ -16,5 +18,10 @@ public class Subtask extends Task {
     public String toString() {
         return "ID - " + getId() + " Подзадача: " + getTitle() + " Статус: " + getStatus() + "\nОписание: " + getText()
                 + "\nЭпик: " + parentId + "\n------------------------------------------------";
+    }
+
+    @Override
+    public TypeOfTask getTypeOfTask(){
+        return TypeOfTask.SUBTASK;
     }
 }

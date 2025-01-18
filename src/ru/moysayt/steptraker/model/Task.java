@@ -1,5 +1,7 @@
 package ru.moysayt.steptraker.model;
 
+import ru.moysayt.steptraker.service.directory.TypeOfTask;
+
 import java.util.Objects;
 
 public class Task {
@@ -55,6 +57,10 @@ public class Task {
     @Override
     public int hashCode() {
         return Objects.hash(id, title, text, status);
+    }
+
+    public TypeOfTask getTypeOfTask(){
+        return TypeOfTask.TASK;
     }
 
 }

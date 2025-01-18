@@ -24,12 +24,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
     // Задача в строку
     private String taskToString(Task task) {
-        TypeOfTask typeOfTask = switch (task.getClass().getName()) {
-            case "ru.moysayt.steptraker.model.Task" -> TypeOfTask.TASK;
-            case "ru.moysayt.steptraker.model.Epic" -> TypeOfTask.EPIC;
-            case "ru.moysayt.steptraker.model.Subtask" -> TypeOfTask.SUBTASK;
-            default -> null;
-        };
+        TypeOfTask typeOfTask = task.getTypeOfTask();
 
         String subtaskParentId = "";
         if (typeOfTask == TypeOfTask.SUBTASK) {
@@ -74,15 +69,22 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         String[] values = value.split(";");
         Task task = null;
 
-        if (TypeOfTask.valueOf(values[1]).equals(TypeOfTask.TASK)) {
-            task = new Task(values[2], values[4], StatusOfTask.valueOf(values[3]));
-            task.setId(Integer.parseInt(values[0]));
-        } else if (TypeOfTask.valueOf(values[1]).equals(TypeOfTask.EPIC)) {
-            task = new Epic(values[2], values[4], StatusOfTask.valueOf(values[3]));
-            task.setId(Integer.parseInt(values[0]));
-        } else if (TypeOfTask.valueOf(values[1]).equals(TypeOfTask.SUBTASK)) {
-            task = new Subtask(Integer.parseInt(values[5]), values[2], values[4], StatusOfTask.valueOf(values[3]));
-            task.setId(Integer.parseInt(values[0]));
+        int taskId = Integer.parseInt(values[0]);
+        String typeOfTask = values[1];
+        String name = values[2];
+        String status = values[3];
+        String descriptionTask = values[4];
+
+        if (TypeOfTask.valueOf(typeOfTask).equals(TypeOfTask.TASK)) {
+            task = new Task(name, descriptionTask, StatusOfTask.valueOf(status));
+            task.setId(taskId);
+        } else if (TypeOfTask.valueOf(typeOfTask).equals(TypeOfTask.EPIC)) {
+            task = new Epic(name, descriptionTask, StatusOfTask.valueOf(status));
+            task.setId(taskId);
+        } else if (TypeOfTask.valueOf(typeOfTask).equals(TypeOfTask.SUBTASK)) {
+            int epicId = Integer.parseInt(values[5]);
+            task = new Subtask(epicId, name, descriptionTask, StatusOfTask.valueOf(status));
+            task.setId(taskId);
         }
 
         return task;
@@ -110,7 +112,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             setMaxId(fileBackedTaskManager); // Устанавливаем счётчик id
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ManagerSaveException("Невозможно прочитать файл: " + e);
         }
         return fileBackedTaskManager;
     }
