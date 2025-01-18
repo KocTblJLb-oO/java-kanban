@@ -41,6 +41,11 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
+    // При восстановлении задач из файла необходимо установить счётчик ID в соответствии с файлом
+    public void setStartId(int i) {
+        taskId = i;
+    }
+
 /*
 ------------------------------------------------ РАБОТА С ЗАДАЧАМИ
  */
@@ -88,6 +93,11 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteTask(int id) {
         taskList.remove(id);
         historyManager.remove(id); // Удаление из истории
+    }
+
+    // Метод добавляет задачу в список. Необходим для восстановления задач из файла
+    public void addTaskInTaskList(Task task) {
+        taskList.put(task.getId(), task);
     }
 
     /*
@@ -188,6 +198,11 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    // Метод добавляет эпик в список. Необходим для восстановления задач из файла
+    public void addEpicInEpicList(Epic epic) {
+        epicList.put(epic.getId(), epic);
+    }
+
     /*
 ------------------------------------------------ РАБОТА С ПОДЗАДАЧАМИ
  */
@@ -249,6 +264,12 @@ public class InMemoryTaskManager implements TaskManager {
         setStatusEpic(epic);
         subtaskList.remove(id);
         historyManager.remove(id); // Удаление из истории
+    }
+
+    // Метод добавляет сабтаск в список. Необходим для восстановления задач из файла
+    public void addTSubtaskInSubtaskList(Subtask subtask) {
+        subtaskList.put(subtask.getId(), subtask);
+        epicList.get(subtask.getParentId()).addSubtask(subtask.getId()); // Добавляем сабтаск в эпик
     }
 
 }
