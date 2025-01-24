@@ -144,14 +144,18 @@ public class Main {
                 Дата и время
                 ------------------------------------------------""");
 
-        Task t2101 = new Task("1. Дата и время", "Описание задачи 1", StatusOfTask.NEW, localDateTime.plus(Duration.ofMinutes(rd.nextLong(1000))), duration);
-        Task t21012 = new Task("2. Дата и время", "Описание задачи 2", StatusOfTask.NEW, localDateTime.plus(Duration.ofMinutes(rd.nextLong(1000))), duration);
+        Task t2101 = new Task("1. Дата и время", "Описание задачи 1", StatusOfTask.NEW,
+                localDateTime.plus(Duration.ofMinutes(rd.nextLong(1000))), duration);
+        Task t21012 = new Task("2. Дата и время", "Описание задачи 2", StatusOfTask.NEW,
+                localDateTime.plus(Duration.ofMinutes(rd.nextLong(1000))), duration);
         inMemoryTaskManager.createTask(t2101);
         inMemoryTaskManager.createTask(t21012);
         Epic e2101 = new Epic("Эпик. Дата и время", "Описание эпика 1", StatusOfTask.NEW);
         inMemoryTaskManager.createEpic(e2101);
-        Subtask s2101 = new Subtask(10, "Подзадача 1", "Описание подзадачи 1", StatusOfTask.NEW, localDateTime.plus(Duration.ofMinutes(rd.nextLong(1000))), duration);
-        Subtask s21012 = new Subtask(10, "Подзадача 2", "Описание подзадачи 2", StatusOfTask.NEW, localDateTime.plus(Duration.ofMinutes(rd.nextLong(1000))), duration);
+        Subtask s2101 = new Subtask(10, "Подзадача 1", "Описание подзадачи 1",
+                StatusOfTask.NEW, localDateTime.plus(Duration.ofMinutes(rd.nextLong(1000))), duration);
+        Subtask s21012 = new Subtask(10, "Подзадача 2", "Описание подзадачи 2",
+                StatusOfTask.NEW, localDateTime.plus(Duration.ofMinutes(rd.nextLong(1000))), duration);
         inMemoryTaskManager.createSubtask(10, s2101);
         inMemoryTaskManager.createSubtask(10, s21012);
 
@@ -172,10 +176,10 @@ public class Main {
                 "--- Пересечение задач" +
                 "------------------------------------------------");
 
-        Task conflict1 = new Task("Конфликт 1", "Описание задачи 1", StatusOfTask.NEW, localDateTime
-                , Duration.ofMinutes(100));
-        Task conflict2 = new Task("Конфликт 2", "Описание задачи 1", StatusOfTask.NEW
-                , localDateTime.plus(Duration.ofMinutes(10)), Duration.ofMinutes(100));
+        Task conflict1 = new Task("Конфликт 1", "Описание задачи 1", StatusOfTask.NEW,
+                localDateTime, Duration.ofMinutes(100));
+        Task conflict2 = new Task("Конфликт 2", "Описание задачи 1", StatusOfTask.NEW,
+                localDateTime.plus(Duration.ofMinutes(10)), Duration.ofMinutes(100));
         try {
             inMemoryTaskManager.createTask(conflict1);
             inMemoryTaskManager.createTask(conflict2);
