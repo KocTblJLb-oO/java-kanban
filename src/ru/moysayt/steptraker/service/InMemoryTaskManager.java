@@ -17,7 +17,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Epic> epicList = new HashMap<>();
     private final HashMap<Integer, Subtask> subtaskList = new HashMap<>();
     public HistoryManager<Task> historyManager = Managers.getDefaultHistory();
-    private final TreeSet<Task> prioritizedTasksTreeSet = new TreeSet<>(Comparator.comparing(Task::getStartTime));
+    private final Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
 
     /*
 ------------------------------------------------ МЕТОДЫ ТАСК МЕНЕДЖЕРА
@@ -50,22 +50,31 @@ public class InMemoryTaskManager implements TaskManager {
     // Добавляем Таски в список по приоритету
     private void addInPrioritizedTasksTreeSet(Task task) {
         if (task.getStartTime() != null) {
-            prioritizedTasksTreeSet.add(task);
+            prioritizedTasks.add(task);
         }
     }
 
     //возвращающий список задач и подзадач в заданном порядке
-    public TreeSet<Task> getPrioritizedTasks() {
-        return prioritizedTasksTreeSet;
+    @Override
+    public ArrayList<Task> getPrioritizedTasks() {
+        return new ArrayList<>(prioritizedTasks);
     }
 
     // Проверяет две задачи на пересечение по времени
-    private boolean checkTimeConflict(Task t1, Task t2) {
+    private boolean isConflictTwoTask(Task t1, Task t2) {
         if (t1.getStartTime() == null || t2.getStartTime() == null) {
             return false;
         }
         return t1.getStartTime().isBefore(t2.getStartTime()) && t1.getEndTime().isAfter(t2.getStartTime()) // Старт t2 на отрезке t1
                 || t1.getStartTime().isBefore(t2.getEndTime()) && t1.getEndTime().isAfter(t2.getEndTime()); // Конец t2 на отрезке t1
+    }
+
+    private void checkConflictTime(Task task) {
+        boolean isConflict = prioritizedTasks.stream() // Проверка задач на пересечение по времени
+                .anyMatch(task2 -> isConflictTwoTask(task, task2));
+        if (isConflict) {
+            throw new ManagerSaveException("Время выполнения задачи конфликтует с уже имеющейся");
+        }
     }
 
 /*
@@ -75,11 +84,7 @@ public class InMemoryTaskManager implements TaskManager {
     // Создание задачи
     @Override
     public void createTask(Task task) {
-        boolean isConflict = prioritizedTasksTreeSet.stream() // Проверка задач на пересечение по времени
-                .anyMatch(task2 -> checkTimeConflict(task, task2));
-        if (isConflict) {
-            throw new ManagerSaveException("Время выполнения задачи конфликтует с уже имеющейся");
-        }
+        checkConflictTime(task);
 
         int id = getNewTaskId();
         task.setId(id);
@@ -101,7 +106,7 @@ public class InMemoryTaskManager implements TaskManager {
                 .forEach(historyManager::remove); // Удаление всех задач из истории
         taskList.values().stream()
                 .filter(task -> task.getStartTime() != null)
-                .forEach(prioritizedTasksTreeSet::remove); // Удаление из списка по приоритету
+                .forEach(prioritizedTasks::remove); // Удаление из списка по приоритету
 
         taskList.clear();
     }
@@ -117,11 +122,7 @@ public class InMemoryTaskManager implements TaskManager {
     // Обновление задачи
     @Override
     public void updateTask(Task task) {
-        boolean isConflict = prioritizedTasksTreeSet.stream() // Проверка задач на пересечение по времени
-                .anyMatch(task2 -> checkTimeConflict(task, task2));
-        if (isConflict) {
-            throw new ManagerSaveException("Время выполнения задачи конфликтует с уже имеющейся");
-        }
+        checkConflictTime(task);
 
         taskList.put(task.getId(), task);
         addInPrioritizedTasksTreeSet(task);
@@ -131,7 +132,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteTask(int id) {
         if (taskList.get(id).getStartTime() != null) {
-            prioritizedTasksTreeSet.remove(taskList.get(id)); // Удаление из списка по приоритету
+            prioritizedTasks.remove(taskList.get(id)); // Удаление из списка по приоритету
         }
         taskList.remove(id);
         historyManager.remove(id); // Удаление из истории
@@ -170,6 +171,13 @@ public class InMemoryTaskManager implements TaskManager {
         subtaskList.values().stream()
                 .map(Task::getId)
                 .forEach(historyManager::remove); // Удаление всех сабтасков из истории
+        epicList.values().stream()
+                .map(Epic::getEpicSubtask)
+                .forEach(subList -> {
+                    for (int i : subList) {
+                        prioritizedTasks.remove(this.getSubtaskByID(i));
+                    }
+                }); // Удаляем все сабтаски эпиков из списка по приоритету
 
         epicList.clear();
         subtaskList.clear(); // Удаляем все подзадачи
@@ -241,6 +249,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    // Устанавливает время начала, окончания и продолжительность эпика
     private void setTimeEpic(Epic epic) {
         Optional<Map.Entry<Integer, Subtask>> startTimeSubtaskOptional = subtaskList.entrySet().stream()
                 .filter(mapEntry -> mapEntry.getValue().getStartTime() != null).min(Map.Entry.comparingByValue(
@@ -273,11 +282,7 @@ public class InMemoryTaskManager implements TaskManager {
     // Создание подзадачи
     @Override
     public void createSubtask(int epicId, Subtask subtask) {
-        boolean isConflict = prioritizedTasksTreeSet.stream() // Проверка задач на пересечение по времени
-                .anyMatch(task2 -> checkTimeConflict(subtask, task2));
-        if (isConflict) {
-            throw new ManagerSaveException("Время выполнения задачи конфликтует с уже имеющейся");
-        }
+        checkConflictTime(subtask);
 
         int id = getNewTaskId();
         subtask.setId(id);
@@ -303,7 +308,7 @@ public class InMemoryTaskManager implements TaskManager {
                 .forEach(historyManager::remove); // Удаление всех задач из истории
         subtaskList.values().stream()
                 .filter(task -> task.getStartTime() != null)
-                .forEach(prioritizedTasksTreeSet::remove); // Удаление из списка по приоритету
+                .forEach(prioritizedTasks::remove); // Удаление из списка по приоритету
 
         subtaskList.clear();
 
@@ -322,11 +327,7 @@ public class InMemoryTaskManager implements TaskManager {
     // Обновление подзадачи
     @Override
     public void updateSubtask(Subtask subtask) {
-        boolean isConflict = prioritizedTasksTreeSet.stream() // Проверка задач на пересечение по времени
-                .anyMatch(task2 -> checkTimeConflict(subtask, task2));
-        if (isConflict) {
-            throw new ManagerSaveException("Время выполнения задачи конфликтует с уже имеющейся");
-        }
+        checkConflictTime(subtask);
 
         subtaskList.put(subtask.getId(), subtask);
         setStatusEpic(epicList.get(subtask.getParentId()));
@@ -343,12 +344,11 @@ public class InMemoryTaskManager implements TaskManager {
         setTimeEpic(epic); // Обновление сроков эпика
 
         if (subtaskList.get(id).getStartTime() != null) {
-            prioritizedTasksTreeSet.remove(subtaskList.get(id)); // Удаление из списка по приоритету
+            prioritizedTasks.remove(subtaskList.get(id)); // Удаление из списка по приоритету
         }
 
         subtaskList.remove(id);
         historyManager.remove(id); // Удаление из истории
-
     }
 
     // Метод добавляет сабтаск в список. Необходим для восстановления задач из файла

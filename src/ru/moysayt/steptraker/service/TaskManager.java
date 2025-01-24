@@ -36,6 +36,9 @@ public interface TaskManager {
     // Удаление задачи
     void deleteTask(int id);
 
+    // Возвращающий список задач и подзадач в заданном порядке
+    ArrayList<Task> getPrioritizedTasks();
+
     /*
 ------------------------------------------------ РАБОТА С ЭПИКАМИ
  */
