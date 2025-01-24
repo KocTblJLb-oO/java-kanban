@@ -28,7 +28,7 @@ class InMemoryTaskManagerTest {
 
     @BeforeEach
     void startTest() {
-        inMemoryTaskManager = new InMemoryTaskManager();
+
         localDateTime = LocalDateTime.now();
         duration = Duration.ofMinutes(10);
         task1 = new Task("", "testTask", StatusOfTask.NEW);
@@ -42,9 +42,10 @@ class InMemoryTaskManagerTest {
     // проверьте, что InMemoryTaskManager действительно добавляет задачи разного типа и может найти их по id;
     @Test
     void addTaskAndFindById() {
+        task1 = new Task("", "testTask", StatusOfTask.NEW);
         task1.setId(2);
         epic.setId(1);
-
+        inMemoryTaskManager = new InMemoryTaskManager();
         inMemoryTaskManager.createTask(task1);
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubtask(2, subtask);
@@ -57,6 +58,8 @@ class InMemoryTaskManagerTest {
     // проверьте, что задачи с заданным id и сгенерированным id не конфликтуют внутри менеджера;
     @Test
     void createTaskByEqualsId() {
+        inMemoryTaskManager = new InMemoryTaskManager();
+        task1 = new Task("", "testTask", StatusOfTask.NEW);
         task1.setId(1);
         task2.setId(inMemoryTaskManager.getId());
 
@@ -69,6 +72,7 @@ class InMemoryTaskManagerTest {
     // Тест пересечения задач по времени
     @Test
     void conflictTime() {
+        inMemoryTaskManager = new InMemoryTaskManager();
         inMemoryTaskManager.createTask(task3);
 
         assertThrows(ManagerSaveException.class, () -> inMemoryTaskManager.createTask(task4)
