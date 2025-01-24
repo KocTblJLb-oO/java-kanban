@@ -2,14 +2,21 @@ package ru.moysayt.steptraker.model;
 
 import ru.moysayt.steptraker.service.directory.TypeOfTask;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Epic extends Task {
 
-    private ArrayList<Integer> subTaskIds = new ArrayList<>();
+    private final ArrayList<Integer> subTaskIds = new ArrayList<>();
 
     public Epic(String title, String text, StatusOfTask status) {
         super(title, text, status);
+    }
+
+    public Epic(String title, String text, StatusOfTask status, LocalDateTime startTime,
+                Duration duration) {
+        super(title, text, status, startTime, duration);
     }
 
     public void addSubtask(int idSubtask) {
@@ -31,6 +38,7 @@ public class Epic extends Task {
     @Override
     public String toString() {
         return "ID - " + getId() + " Эпик: " + getTitle() + " Статус: " + getStatus() + "\nОписание: " + getText()
+                + "\nНачало: " + getStartTime() + " Продолжительность: " + getDuration() + " Окончание: " + getEndTime()
                 + "\nПодзадачи:" + subTaskIds + "\n------------------------------------------------";
     }
 

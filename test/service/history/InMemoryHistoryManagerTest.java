@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class InMemoryHistoryManagerTest {
+class InMemoryHistoryManagerTest extends InMemoryTaskManagerTest {
     InMemoryTaskManager inMemoryTaskManager;
     Task task1;
     Task task2;

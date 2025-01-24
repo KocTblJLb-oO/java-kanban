@@ -9,6 +9,8 @@ import ru.moysayt.steptraker.service.directory.TypeOfTask;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager {
@@ -33,14 +35,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         }
 
         return task.getId() + ";" + typeOfTask + ";" + task.getTitle() + ";" + task.getStatus() + ";"
-                + task.getText() + ";" + subtaskParentId;
+                + task.getText() + ";" + subtaskParentId + ";" + task.getStartTime() + ";" + task.getDuration() + ";"
+                + task.getEndTime();
     }
 
     // Сохраняем текущее состояние файл-менеджера в файл. Каждый раз сохраняется всё, перезаписывая файл
     private void save() {
         try (FileWriter wr = new FileWriter(fileForTasks, Charset.forName("Windows-1251"));
              BufferedWriter bw = new BufferedWriter(wr)) {
-            bw.write("id;type;name;status;description;epic\n"); // Добавляем в файл шапку
+            bw.write("id;type;name;status;description;epic;startTime;duration;endTime\n"); // Добавляем в файл шапку
 
             final ArrayList<Task> allTaskList = this.getTasks();
             final ArrayList<Epic> allEpicList = this.getEpics();
@@ -74,16 +77,36 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         String name = values[2];
         String status = values[3];
         String descriptionTask = values[4];
+        String startTimeString = values[6];
+        String durationString = values[7];
 
         if (TypeOfTask.valueOf(typeOfTask).equals(TypeOfTask.TASK)) {
-            task = new Task(name, descriptionTask, StatusOfTask.valueOf(status));
+            if (startTimeString.equals("null")) {
+                task = new Task(name, descriptionTask, StatusOfTask.valueOf(status));
+            } else {
+                LocalDateTime startTime = LocalDateTime.parse(startTimeString);
+                Duration duration = Duration.parse(durationString);
+                task = new Task(name, descriptionTask, StatusOfTask.valueOf(status), startTime, duration);
+            }
             task.setId(taskId);
         } else if (TypeOfTask.valueOf(typeOfTask).equals(TypeOfTask.EPIC)) {
-            task = new Epic(name, descriptionTask, StatusOfTask.valueOf(status));
+            if (startTimeString.equals("null")) {
+                task = new Epic(name, descriptionTask, StatusOfTask.valueOf(status));
+            } else {
+                LocalDateTime startTime = LocalDateTime.parse(startTimeString);
+                Duration duration = Duration.parse(durationString);
+                task = new Epic(name, descriptionTask, StatusOfTask.valueOf(status), startTime, duration);
+            }
             task.setId(taskId);
         } else if (TypeOfTask.valueOf(typeOfTask).equals(TypeOfTask.SUBTASK)) {
             int epicId = Integer.parseInt(values[5]);
-            task = new Subtask(epicId, name, descriptionTask, StatusOfTask.valueOf(status));
+            if (startTimeString.equals("null")) {
+                task = new Subtask(epicId, name, descriptionTask, StatusOfTask.valueOf(status));
+            } else {
+                LocalDateTime startTime = LocalDateTime.parse(startTimeString);
+                Duration duration = Duration.parse(durationString);
+                task = new Subtask(epicId, name, descriptionTask, StatusOfTask.valueOf(status), startTime, duration);
+            }
             task.setId(taskId);
         }
 
@@ -144,7 +167,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 ------------------------------------------------ Переопределённые методы InMemoryTaskManager.java
 */
 
-    //------------------------------------------------ Задачи
+//------------------------------------------------ Задачи
 
     // Создание задачи
     @Override
@@ -174,7 +197,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         save();
     }
 
-    //------------------------------------------------ Эпики
+//------------------------------------------------ Эпики
 
     // Создание эпика
     @Override
@@ -204,7 +227,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         save();
     }
 
-    //------------------------------------------------ Сабтаски
+//------------------------------------------------ Сабтаски
 
     // Создание подзадачи
     @Override
