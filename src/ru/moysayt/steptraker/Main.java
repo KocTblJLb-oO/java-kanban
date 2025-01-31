@@ -6,11 +6,15 @@ import ru.moysayt.steptraker.model.Subtask;
 import ru.moysayt.steptraker.model.Task;
 import ru.moysayt.steptraker.service.FileBackedTaskManager;
 import ru.moysayt.steptraker.service.InMemoryTaskManager;
+import ru.moysayt.steptraker.service.directory.ManagerSaveException;
 import ru.moysayt.steptraker.service.history.InMemoryHistoryManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Main {
 
@@ -18,6 +22,10 @@ public class Main {
         System.out.println("Поехали!");
         InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
 
+        Random rd = new Random();
+        LocalDateTime localDateTime = LocalDateTime.now();
+        Duration duration = Duration.ofMinutes(rd.nextLong(10));
+        System.out.println(duration);
 
         // Создаём две задачи
         Task t1 = new Task("Заголовок 1", "Описание задачи 1", StatusOfTask.NEW);
@@ -28,7 +36,7 @@ public class Main {
         // Создаём эпик с двумя подзадачами
         Epic e1 = new Epic("Эпик 1", "Описание эпика 1", StatusOfTask.NEW);
         inMemoryTaskManager.createEpic(e1);
-        Subtask s1 = new Subtask(3, "Подзадача 1", "Описание подзадачи 1", StatusOfTask.NEW);
+        Subtask s1 = new Subtask(3, "Подзадача 1", "Описание подзадачи 1", StatusOfTask.NEW, localDateTime, duration);
         Subtask s2 = new Subtask(3, "Подзадача 2", "Описание подзадачи 2", StatusOfTask.NEW);
         inMemoryTaskManager.createSubtask(3, s1);
         inMemoryTaskManager.createSubtask(3, s2);
@@ -116,15 +124,67 @@ public class Main {
                 ------------------------------------------------""");
 
         FileBackedTaskManager fileBackedTaskManager2 = FileBackedTaskManager.loadFromFile(file);
-
+        System.out.println("--- Taski");
         for (Task task : fileBackedTaskManager2.getTasks()) {
             System.out.println(task);
         }
+        System.out.println("--- Epiki");
         for (Epic epic : fileBackedTaskManager2.getEpics()) {
             System.out.println(epic);
         }
+        System.out.println("--- Subtaski");
         for (Subtask subtask : fileBackedTaskManager2.getSubtasks()) {
             System.out.println(subtask);
+        }
+
+        System.out.println("""
+                ------------------------------------------------
+                ------------------------------------------------
+                ------------------------------------------------
+                Дата и время
+                ------------------------------------------------""");
+
+        Task t2101 = new Task("1. Дата и время", "Описание задачи 1", StatusOfTask.NEW,
+                localDateTime.plus(Duration.ofMinutes(rd.nextLong(1000))), duration);
+        Task t21012 = new Task("2. Дата и время", "Описание задачи 2", StatusOfTask.NEW,
+                localDateTime.plus(Duration.ofMinutes(rd.nextLong(1000))), duration);
+        inMemoryTaskManager.createTask(t2101);
+        inMemoryTaskManager.createTask(t21012);
+        Epic e2101 = new Epic("Эпик. Дата и время", "Описание эпика 1", StatusOfTask.NEW);
+        inMemoryTaskManager.createEpic(e2101);
+        Subtask s2101 = new Subtask(10, "Подзадача 1", "Описание подзадачи 1",
+                StatusOfTask.NEW, localDateTime.plus(Duration.ofMinutes(rd.nextLong(1000))), duration);
+        Subtask s21012 = new Subtask(10, "Подзадача 2", "Описание подзадачи 2",
+                StatusOfTask.NEW, localDateTime.plus(Duration.ofMinutes(rd.nextLong(1000))), duration);
+        inMemoryTaskManager.createSubtask(10, s2101);
+        inMemoryTaskManager.createSubtask(10, s21012);
+
+        inMemoryTaskManager.getTasks().stream()
+                .forEach(System.out::println);
+        inMemoryTaskManager.getEpics().stream()
+                .forEach(System.out::println);
+        inMemoryTaskManager.getSubtasks().stream()
+                .forEach(System.out::println);
+
+        System.out.println("------------------------------------------------" +
+                "--- Задачи по приоритету" +
+                "------------------------------------------------");
+        inMemoryTaskManager.getPrioritizedTasks().stream()
+                .forEach(System.out::println);
+
+        System.out.println("------------------------------------------------" +
+                "--- Пересечение задач" +
+                "------------------------------------------------");
+
+        Task conflict1 = new Task("Конфликт 1", "Описание задачи 1", StatusOfTask.NEW,
+                localDateTime, Duration.ofMinutes(100));
+        Task conflict2 = new Task("Конфликт 2", "Описание задачи 1", StatusOfTask.NEW,
+                localDateTime.plus(Duration.ofMinutes(10)), Duration.ofMinutes(100));
+        try {
+            inMemoryTaskManager.createTask(conflict1);
+            inMemoryTaskManager.createTask(conflict2);
+        } catch (ManagerSaveException e) {
+            System.out.println(e.getMessage());
         }
     }
 
