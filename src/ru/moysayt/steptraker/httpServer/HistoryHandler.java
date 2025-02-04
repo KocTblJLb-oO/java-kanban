@@ -2,14 +2,13 @@ package ru.moysayt.steptraker.httpServer;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import ru.moysayt.steptraker.model.Task;
 import ru.moysayt.steptraker.service.TaskManager;
 
 import java.io.IOException;
 import java.util.List;
 
-public class HistoryHandler extends BaseHttpHandler implements HttpHandler {
+public class HistoryHandler extends BaseHttpHandler {
 
     public HistoryHandler(TaskManager taskManager, Gson gson) {
         super(taskManager, gson);

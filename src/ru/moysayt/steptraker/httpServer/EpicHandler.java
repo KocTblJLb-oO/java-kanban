@@ -2,7 +2,6 @@ package ru.moysayt.steptraker.httpServer;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import ru.moysayt.steptraker.model.Epic;
 import ru.moysayt.steptraker.model.Subtask;
 import ru.moysayt.steptraker.model.Task;
@@ -15,7 +14,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EpicHandler extends BaseHttpHandler implements HttpHandler {
+import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_OK;
+
+public class EpicHandler extends BaseHttpHandler {
 
     public EpicHandler(TaskManager taskManager, Gson gson) {
         super(taskManager, gson);
@@ -91,7 +93,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
             } else {
                 sendNotFound(exchange, "Эндпоинт не найден");
             }
-            sendOk(exchange, 201); // Отправляем ответ
+            sendOk(exchange, HTTP_CREATED); // Отправляем ответ
         } catch (ManagerSaveException e) {
             sendError(exchange, e.getMessage());
         }
@@ -108,7 +110,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
             } else {
                 sendNotFound(exchange, "Эндпоинт не найден");
             }
-            sendOk(exchange, 200); // Отправляем ответ
+            sendOk(exchange, HTTP_OK); // Отправляем ответ
         } catch (ManagerSaveException e) {
             sendError(exchange, e.getMessage());
         }

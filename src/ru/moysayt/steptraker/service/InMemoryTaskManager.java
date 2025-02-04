@@ -219,11 +219,7 @@ public class InMemoryTaskManager implements TaskManager {
             historyManager.remove(subtaskId);
         }
 
-        for (Subtask subtask : subtaskList.values()) { // Удаляем сабтаски
-            if (id == subtask.getParentId()) {
-                subtaskList.remove(subtask.getId());
-            }
-        }
+        subtaskList.values().removeIf(subtask -> id == subtask.getParentId()); // Удаляем сабтаски
 
         epicList.get(id).deleteAllSubtask();
         epicList.remove(id);
@@ -330,8 +326,8 @@ public class InMemoryTaskManager implements TaskManager {
 
         subtaskList.clear();
 
-        epicList.values().stream().forEach(Epic::deleteAllSubtask); // Удаляем все подзадачи в эпиках и обновляем статусы
-        epicList.values().stream().forEach(this::setStatusEpic);
+        epicList.values().forEach(Epic::deleteAllSubtask); // Удаляем все подзадачи в эпиках и обновляем статусы
+        epicList.values().forEach(this::setStatusEpic);
     }
 
     // Получение подзадачи по ID

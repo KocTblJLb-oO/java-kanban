@@ -2,7 +2,6 @@ package ru.moysayt.steptraker.httpServer;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import ru.moysayt.steptraker.model.Task;
 import ru.moysayt.steptraker.service.TaskManager;
 import ru.moysayt.steptraker.service.directory.ManagerSaveException;
@@ -12,7 +11,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-public class TaskHandler extends BaseHttpHandler implements HttpHandler {
+import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_OK;
+
+public class TaskHandler extends BaseHttpHandler {
 
     public TaskHandler(TaskManager taskManager, Gson gson) {
         super(taskManager, gson);
@@ -82,7 +84,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         } catch (ManagerSaveException e) {
             sendHasInteractions(exchange, e.getMessage());
         }
-        sendOk(exchange, 201); // Отправляем ответ
+        sendOk(exchange, HTTP_CREATED); // Отправляем ответ
     }
 
     // Обработка DELETE запросов
@@ -100,7 +102,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
             } else {
                 sendNotFound(exchange, "Эндпоинт не найден");
             }
-            sendOk(exchange, 200); // Отправляем ответ
+            sendOk(exchange, HTTP_OK); // Отправляем ответ
         } catch (ManagerSaveException e) {
             sendError(exchange, e.getMessage());
         }

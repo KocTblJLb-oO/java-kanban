@@ -16,23 +16,21 @@ import java.time.LocalDateTime;
 
 public class HttpTaskServer {
 
-    private static TaskManager taskManager;
-    private static HttpServer httpServer;
+    private final TaskManager taskManager;
+    private final HttpServer httpServer;
+    Gson gson;
 
     public HttpTaskServer(TaskManager taskManager) throws IOException {
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-                .registerTypeAdapter(Duration.class, new DurationAdapter())
-                .create();
+        gson = HttpTaskServer.getGson();
 
-        HttpTaskServer.taskManager = taskManager;
+        this.taskManager = taskManager;
 
         httpServer = HttpServer.create(new InetSocketAddress(8080), 0);
-        httpServer.createContext("/tasks", new TaskHandler(HttpTaskServer.taskManager, gson));
-        httpServer.createContext("/subtasks", new SubtaskHandler(HttpTaskServer.taskManager, gson));
-        httpServer.createContext("/epics", new EpicHandler(HttpTaskServer.taskManager, gson));
-        httpServer.createContext("/history", new HistoryHandler(HttpTaskServer.taskManager, gson));
-        httpServer.createContext("/prioritized", new PrioritizedHandler(HttpTaskServer.taskManager, gson));
+        httpServer.createContext("/tasks", new TaskHandler(taskManager, gson));
+        httpServer.createContext("/subtasks", new SubtaskHandler(taskManager, gson));
+        httpServer.createContext("/epics", new EpicHandler(taskManager, gson));
+        httpServer.createContext("/history", new HistoryHandler(taskManager, gson));
+        httpServer.createContext("/prioritized", new PrioritizedHandler(taskManager, gson));
     }
 
     public static void main(String[] args) throws IOException {
@@ -51,5 +49,12 @@ public class HttpTaskServer {
 
     public TaskManager getTaskManager() {
         return taskManager;
+    }
+
+    public static Gson getGson() {
+        return new GsonBuilder()
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                .registerTypeAdapter(Duration.class, new DurationAdapter())
+                .create();
     }
 }
