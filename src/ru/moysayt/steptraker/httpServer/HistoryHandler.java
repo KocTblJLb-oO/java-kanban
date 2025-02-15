@@ -10,8 +10,10 @@ import java.util.List;
 
 public class HistoryHandler extends BaseHttpHandler {
 
-    public HistoryHandler(TaskManager taskManager, Gson gson) {
-        super(taskManager, gson);
+    Gson gson = HttpTaskServer.getGson();
+
+    public HistoryHandler(TaskManager taskManager) {
+        super(taskManager);
     }
 
     @Override

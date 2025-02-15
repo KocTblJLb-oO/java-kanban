@@ -10,8 +10,10 @@ import java.util.List;
 
 public class PrioritizedHandler extends BaseHttpHandler {
 
-    public PrioritizedHandler(TaskManager taskManager, Gson gson) {
-        super(taskManager, gson);
+    Gson gson = HttpTaskServer.getGson();
+
+    public PrioritizedHandler(TaskManager taskManager) {
+        super(taskManager);
     }
 
     @Override

@@ -19,8 +19,10 @@ import static java.net.HttpURLConnection.HTTP_OK;
 
 public class EpicHandler extends BaseHttpHandler {
 
-    public EpicHandler(TaskManager taskManager, Gson gson) {
-        super(taskManager, gson);
+    Gson gson = HttpTaskServer.getGson();
+
+    public EpicHandler(TaskManager taskManager) {
+        super(taskManager);
     }
 
     @Override

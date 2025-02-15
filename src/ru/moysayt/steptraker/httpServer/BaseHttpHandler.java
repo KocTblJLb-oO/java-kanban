@@ -1,6 +1,5 @@
 package ru.moysayt.steptraker.httpServer;
 
-import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import ru.moysayt.steptraker.service.TaskManager;
@@ -13,11 +12,10 @@ import static java.net.HttpURLConnection.*;
 public abstract class BaseHttpHandler implements HttpHandler {
 
     TaskManager taskManager;
-    Gson gson;
 
-    public BaseHttpHandler(TaskManager taskManager, Gson gson) {
+    public BaseHttpHandler(TaskManager taskManager) {
         this.taskManager = taskManager;
-        this.gson = gson;
+
     }
 
     // Отправляет ответ при успешном поиске

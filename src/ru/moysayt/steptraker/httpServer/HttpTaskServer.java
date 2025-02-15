@@ -18,19 +18,17 @@ public class HttpTaskServer {
 
     private final TaskManager taskManager;
     private final HttpServer httpServer;
-    Gson gson;
 
     public HttpTaskServer(TaskManager taskManager) throws IOException {
-        gson = HttpTaskServer.getGson();
 
         this.taskManager = taskManager;
 
         httpServer = HttpServer.create(new InetSocketAddress(8080), 0);
-        httpServer.createContext("/tasks", new TaskHandler(taskManager, gson));
-        httpServer.createContext("/subtasks", new SubtaskHandler(taskManager, gson));
-        httpServer.createContext("/epics", new EpicHandler(taskManager, gson));
-        httpServer.createContext("/history", new HistoryHandler(taskManager, gson));
-        httpServer.createContext("/prioritized", new PrioritizedHandler(taskManager, gson));
+        httpServer.createContext("/tasks", new TaskHandler(taskManager));
+        httpServer.createContext("/subtasks", new SubtaskHandler(taskManager));
+        httpServer.createContext("/epics", new EpicHandler(taskManager));
+        httpServer.createContext("/history", new HistoryHandler(taskManager));
+        httpServer.createContext("/prioritized", new PrioritizedHandler(taskManager));
     }
 
     public static void main(String[] args) throws IOException {

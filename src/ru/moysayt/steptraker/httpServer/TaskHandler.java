@@ -16,8 +16,10 @@ import static java.net.HttpURLConnection.HTTP_OK;
 
 public class TaskHandler extends BaseHttpHandler {
 
-    public TaskHandler(TaskManager taskManager, Gson gson) {
-        super(taskManager, gson);
+    Gson gson = HttpTaskServer.getGson();
+
+    public TaskHandler(TaskManager taskManager) {
+        super(taskManager);
     }
 
     @Override
