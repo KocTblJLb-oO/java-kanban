@@ -6,6 +6,7 @@ import ru.moysayt.steptraker.model.StatusOfTask;
 import ru.moysayt.steptraker.model.Subtask;
 import ru.moysayt.steptraker.model.Task;
 import ru.moysayt.steptraker.service.directory.ManagerSaveException;
+import ru.moysayt.steptraker.service.directory.NotFoundException;
 import ru.moysayt.steptraker.service.history.HistoryManager;
 
 import java.time.Duration;
@@ -17,7 +18,12 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Epic> epicList = new HashMap<>();
     private final HashMap<Integer, Subtask> subtaskList = new HashMap<>();
     public HistoryManager<Task> historyManager = Managers.getDefaultHistory();
-    private final Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
+    private final Set<Task> prioritizedTasks = new TreeSet<>(
+            Comparator.comparing(
+                    Task::getStartTime,
+                    Comparator.nullsLast(Comparator.naturalOrder())
+            ).thenComparing(Task::getId)
+    );
 
     /*
 ------------------------------------------------ МЕТОДЫ ТАСК МЕНЕДЖЕРА
@@ -49,9 +55,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     // Добавляем Таски в список по приоритету
     private void addInPrioritizedTasksTreeSet(Task task) {
-        if (task.getStartTime() != null) {
-            prioritizedTasks.add(task);
-        }
+        prioritizedTasks.add(task);
     }
 
     //возвращающий список задач и подзадач в заданном порядке
@@ -71,7 +75,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     private void checkConflictTime(Task task) {
         boolean isConflict = prioritizedTasks.stream() // Проверка задач на пересечение по времени
-                .anyMatch(task2 -> isConflictTwoTask(task, task2));
+                .anyMatch(task2 -> isConflictTwoTask(task2, task));
         if (isConflict) {
             throw new ManagerSaveException("Время выполнения задачи конфликтует с уже имеющейся");
         }
@@ -116,6 +120,11 @@ public class InMemoryTaskManager implements TaskManager {
     public Task getTaskByID(int id) {
         final Task task = taskList.get(id);
         historyManager.addHistory(task);
+
+        if (task == null) {
+            throw new NotFoundException("Задача не найдена");
+        }
+
         return task;
     }
 
@@ -131,9 +140,7 @@ public class InMemoryTaskManager implements TaskManager {
     // Удаление задачи
     @Override
     public void deleteTask(int id) {
-        if (taskList.get(id).getStartTime() != null) {
-            prioritizedTasks.remove(taskList.get(id)); // Удаление из списка по приоритету
-        }
+        prioritizedTasks.remove(taskList.get(id)); // Удаление из списка по приоритету
         taskList.remove(id);
         historyManager.remove(id); // Удаление из истории
     }
@@ -187,6 +194,11 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic getEpicByID(int id) {
         final Epic epic = epicList.get(id);
+
+        if (epic == null) {
+            throw new NotFoundException("Эпик не найден");
+        }
+
         historyManager.addHistory(epic);
         return epic;
     }
@@ -206,6 +218,8 @@ public class InMemoryTaskManager implements TaskManager {
         for (int subtaskId : subtasks) {
             historyManager.remove(subtaskId);
         }
+
+        subtaskList.values().removeIf(subtask -> id == subtask.getParentId()); // Удаляем сабтаски
 
         epicList.get(id).deleteAllSubtask();
         epicList.remove(id);
@@ -312,14 +326,19 @@ public class InMemoryTaskManager implements TaskManager {
 
         subtaskList.clear();
 
-        epicList.values().stream().forEach(Epic::deleteAllSubtask); // Удаляем все подзадачи в эпиках и обновляем статусы
-        epicList.values().stream().forEach(this::setStatusEpic);
+        epicList.values().forEach(Epic::deleteAllSubtask); // Удаляем все подзадачи в эпиках и обновляем статусы
+        epicList.values().forEach(this::setStatusEpic);
     }
 
     // Получение подзадачи по ID
     @Override
     public Subtask getSubtaskByID(int id) {
         final Subtask subtask = subtaskList.get(id);
+
+        if (subtask == null) {
+            throw new NotFoundException("Сабтаск не найден");
+        }
+
         historyManager.addHistory(subtask);
         return subtask;
     }
@@ -342,10 +361,7 @@ public class InMemoryTaskManager implements TaskManager {
         epic.deleteSubtask(id);
         setStatusEpic(epic);
         setTimeEpic(epic); // Обновление сроков эпика
-
-        if (subtaskList.get(id).getStartTime() != null) {
-            prioritizedTasks.remove(subtaskList.get(id)); // Удаление из списка по приоритету
-        }
+        prioritizedTasks.remove(subtaskList.get(id)); // Удаление из списка по приоритету
 
         subtaskList.remove(id);
         historyManager.remove(id); // Удаление из истории

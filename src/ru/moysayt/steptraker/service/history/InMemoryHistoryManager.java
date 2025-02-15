@@ -17,9 +17,11 @@ public class InMemoryHistoryManager<T extends Task> implements HistoryManager<T>
     // Сохранение истории просмотра
     @Override
     public void addHistory(T task) {
-        removeNode(historyMap.remove(task.getId()));
-        historyMap.put(task.getId(), linkLast(task));
-        size++;
+        if (task != null) {
+            removeNode(historyMap.remove(task.getId()));
+            historyMap.put(task.getId(), linkLast(task));
+            size++;
+        }
     }
 
     // Получение истории просмотра

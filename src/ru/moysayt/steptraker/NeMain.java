@@ -1,5 +1,6 @@
 package ru.moysayt.steptraker;
 
+import ru.moysayt.steptraker.httpServer.HttpTaskServer;
 import ru.moysayt.steptraker.model.Epic;
 import ru.moysayt.steptraker.model.StatusOfTask;
 import ru.moysayt.steptraker.model.Subtask;
@@ -16,9 +17,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Main {
+public class NeMain {
 
-    public static void main(String[] args) throws IOException {
+    public static void generalTest(HttpTaskServer httpTaskServer) throws IOException {
         System.out.println("Поехали!");
         InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
 
@@ -29,7 +30,7 @@ public class Main {
 
         // Создаём две задачи
         Task t1 = new Task("Заголовок 1", "Описание задачи 1", StatusOfTask.NEW);
-        Task t2 = new Task("Заголовок 2", "Описание задачи 2", StatusOfTask.NEW);
+        Task t2 = new Task("Заголовок 2", "Описание задачи 2", StatusOfTask.NEW, localDateTime, duration);
         inMemoryTaskManager.createTask(t1);
         inMemoryTaskManager.createTask(t2);
 
@@ -100,7 +101,7 @@ public class Main {
         System.out.println(file.toPath());
 
         // Создаём файловый менеджер
-        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
+        FileBackedTaskManager fileBackedTaskManager = (FileBackedTaskManager) httpTaskServer.getTaskManager(); //new FileBackedTaskManager(file);
 
         // Создаём задачи
         fileBackedTaskManager.createTask(t1);
